@@ -3,16 +3,22 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
 } from '@mui/material'
 import { Home as HomeIcon } from '@mui/icons-material'
 import { WalletMultiButton } from '@solana/wallet-adapter-material-ui'
+import { useNavigate } from 'react-router-dom'
+import { useWorkspace } from '../../hooks/useWorkspace'
 
 const drawerWidth = 240
 
 export function Sidebar() {
+  const navigate = useNavigate()
+  const { wallet } = useWorkspace()
+
   return (
     <Drawer
       sx={{
@@ -29,11 +35,13 @@ export function Sidebar() {
       <Toolbar />
       <Divider />
       <List>
-        <ListItem>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
+        <ListItem disabled={!wallet} onClick={() => navigate('/')}>
+          <ListItemButton>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItemButton>
         </ListItem>
         <Divider />
         <ListItem
@@ -41,7 +49,7 @@ export function Sidebar() {
             py: 6,
           }}
         >
-          <WalletMultiButton variant="contained" sx={{ width: 1 }} />
+          {wallet && <WalletMultiButton sx={{ width: 1 }} />}
         </ListItem>
       </List>
     </Drawer>

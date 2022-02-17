@@ -5,13 +5,16 @@ import App from './App'
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from '@mui/system'
 import { theme } from './theme'
+import { WalletProvider } from './components/wallet/WalletProvider'
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <WalletProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WalletProvider>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
