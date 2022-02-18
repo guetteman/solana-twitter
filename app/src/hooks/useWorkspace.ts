@@ -7,6 +7,7 @@ import idl from '../../../target/idl/solana_twitter.json'
 
 const opts: ConfirmOptions = {
   preflightCommitment: 'processed',
+  commitment: 'processed',
 }
 
 const programID = new PublicKey(idl.metadata.address)
