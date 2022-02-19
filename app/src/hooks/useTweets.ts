@@ -1,17 +1,48 @@
-import { web3 } from '@project-serum/anchor'
-import { useCallback, useEffect, useState } from 'react'
+import { BN, Idl, Program, ProgramAccount, web3 } from '@project-serum/anchor'
+import { PublicKey } from '@solana/web3.js'
+import dayjs, { Dayjs } from 'dayjs'
+import { useCallback } from 'react'
+import useSWR from 'swr'
 import { useWorkspace } from './useWorkspace'
+
+interface TweetAccount {
+  account: {
+    author: PublicKey
+    timestamp: BN
+    topic: string
+    content: string
+  }
+  publicKey: PublicKey
+}
+
+export interface Tweet {
+  id: string
+  content: string
+  topic: string
+  author: string
+  timestamp: Dayjs
+}
+
+const newTweet = (tweetAccount: TweetAccount): Tweet => {
+  const author = tweetAccount.account.author.toString()
+  return {
+    id: tweetAccount.publicKey.toString(),
+    content: tweetAccount.account.content,
+    topic: tweetAccount.account.topic,
+    author: author.slice(0, 4) + '..' + author.slice(-4),
+    timestamp: dayjs.unix(Number(tweetAccount.account.timestamp.toString())),
+  }
+}
+
+const fetcher = (program: Program<Idl>): Promise<Tweet[]> =>
+  (program.account.tweet.all() as unknown as Promise<TweetAccount[]>).then(
+    (tweetAccounts) =>
+      tweetAccounts.map((tweetAccount) => newTweet(tweetAccount))
+  )
 
 export function useTweets() {
   const { wallet, program } = useWorkspace()
-  const [tweets, setTweets] = useState<any>([])
-
-  useEffect(() => {
-    ;(async () => {
-      const data = await program.account.tweet.all()
-      setTweets(data)
-    })()
-  }, [program])
+  const { data: tweets = [], mutate } = useSWR(program, fetcher)
 
   const sendTweet = useCallback(
     async (topic: string, content: string) => {
@@ -30,10 +61,9 @@ export function useTweets() {
         signers: [tweetKey],
       })
 
-      const data = await program.account.tweet.all()
-      setTweets(data)
+      mutate()
     },
-    [program, wallet, setTweets]
+    [program, wallet]
   )
 
   return {

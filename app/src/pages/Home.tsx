@@ -8,6 +8,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import { Fragment } from 'react'
 import { SendTweet } from '../components/tweets/SendTweet'
 import { useTweets } from '../hooks/useTweets'
 
@@ -27,10 +28,31 @@ export function Home() {
         <SendTweet />
         <Divider />
         <List>
-          {tweets.map((tweet) => (
-            <ListItem key={tweet.publicKey.toString()}>
-              {tweet.account.content}
-            </ListItem>
+          {tweets.map((tweet, index) => (
+            <Fragment key={tweet.id}>
+              <ListItem
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'start',
+                }}
+              >
+                <Box sx={{ width: 1 }}>
+                  <Typography component="span" sx={{ fontWeight: 'bold' }}>
+                    {tweet.author}
+                  </Typography>
+                  <Typography component="span"> - </Typography>
+                  <Typography color="dimgrey" component="span">
+                    {tweet.timestamp.fromNow()}
+                  </Typography>
+                </Box>
+                <Typography variant="body1">{tweet.content}</Typography>
+                <Typography color="secondary" variant="body2" sx={{ mt: 2 }}>
+                  #{tweet.topic}
+                </Typography>
+              </ListItem>
+              {index < tweets.length - 1 && <Divider />}
+            </Fragment>
           ))}
         </List>
       </Container>

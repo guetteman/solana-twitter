@@ -23,6 +23,7 @@ export function SendTweet() {
       setLoading(true)
       await sendTweet(values.topic, values.content)
       setLoading(false)
+      formik.resetForm()
     },
   })
 
@@ -39,7 +40,11 @@ export function SendTweet() {
         value={formik.values.content}
         onChange={formik.handleChange}
         error={formik.touched.content && Boolean(formik.errors.content)}
-        helperText={formik.touched.content ? formik.errors.content : ' '}
+        helperText={
+          formik.touched.content && Boolean(formik.errors.content)
+            ? formik.errors.content
+            : ' '
+        }
       />
 
       <Box
@@ -59,7 +64,11 @@ export function SendTweet() {
           value={formik.values.topic}
           onChange={formik.handleChange}
           error={formik.touched.topic && Boolean(formik.errors.topic)}
-          helperText={formik.touched.topic ? formik.errors.topic : ' '}
+          helperText={
+            formik.touched.topic && Boolean(formik.errors.topic)
+              ? formik.errors.topic
+              : ' '
+          }
         />
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
